@@ -5,6 +5,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Carregar o dataset de flores
 flowers_dataset = tf.keras.utils.get_file(
@@ -12,8 +13,13 @@ flowers_dataset = tf.keras.utils.get_file(
     "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz", 
     untar=True
 )
+print("Dataset path:", flowers_dataset)
+print("Subdirectories:", os.listdir(flowers_dataset))
+flowers_dataset = os.path.join(flowers_dataset, "flower_photos")
+print("Dataset path:", flowers_dataset)
+print("Subdirectories:", os.listdir(flowers_dataset))
 
-data_gen = ImageDataGenerator(rescale=1.0/255, validation_split=0.2)
+data_gen = ImageDataGenerator(rescale=1.0/255, validation_split=0.5)
 
 train_gen = data_gen.flow_from_directory(
     flowers_dataset,
@@ -74,12 +80,3 @@ y_pred = np.argmax(model.predict(val_gen), axis=-1)
 # Relatório de Classificação
 print("\nClassification Report:")
 print(classification_report(y_true, y_pred, target_names=list(train_gen.class_indices.keys())))
-
-# Matriz de Confusão
-conf_matrix = confusion_matrix(y_true, y_pred)
-plt.figure(figsize=(10, 8))
-sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=train_gen.class_indices.keys(), yticklabels=train_gen.class_indices.keys())
-plt.title("Matriz de Confusão")
-plt.xlabel("Predição")
-plt.ylabel("Verdadeiro")
-plt.show()
