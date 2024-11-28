@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -8,10 +9,13 @@ import os
 
 app = Flask(__name__)
 
+logging.basicConfig(level=logging.DEBUG)
+
 # Carregar modelo
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Diretório atual do app.py
-MODEL_PATH = os.path.join(BASE_DIR, "model", "flower_model.h5")
+
+MODEL_PATH = os.path.join(BASE_DIR, '..', "model", "flower_model.h5")
 model = load_model(MODEL_PATH)
 
 # Classes (modifique de acordo com o dataset)
@@ -63,6 +67,10 @@ CLASS_NAMES = ['Daisy', 'Dandelion', 'Roses', 'Sunflowers', 'Tulips']
 #         "errors": int(errors),
 #         "total_samples": total
 #     })
+@app.route('/ping', methods=['GET'])
+def ping():
+    app.logger.debug("Ping endpoint foi chamado")
+    return jsonify({"message": "pong"})
 
 @app.route('/classify', methods=['POST'])
 def classify():
@@ -86,4 +94,5 @@ def classify():
     return jsonify({"class": predicted_class, "confidence": float(confidence)})
 
 if __name__ == '__main__':
+    app.logger.debug("Iniciando o servidor Flask")
     app.run(host='0.0.0.0', port=5000)
