@@ -77,6 +77,12 @@ val_gen.reset()
 y_true = val_gen.classes
 y_pred = np.argmax(model.predict(val_gen), axis=-1)
 
+
+CLASS_NAMES = list(train_gen.class_indices.keys())
+
+def get_class_names():
+    return CLASS_NAMES
+
 # Relatório de Classificação
 print("\nClassification Report:")
 print(classification_report(y_true, y_pred, target_names=list(train_gen.class_indices.keys())))

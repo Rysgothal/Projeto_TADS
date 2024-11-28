@@ -7,6 +7,8 @@ import numpy as np
 from io import BytesIO
 import os
 
+from model.train import get_class_names
+
 
 app = Flask(__name__)
 
@@ -20,7 +22,7 @@ MODEL_PATH = os.path.join(BASE_DIR, '..', "model", "flower_model.h5")
 model = load_model(MODEL_PATH)
 
 # Classes (modifique de acordo com o dataset)
-CLASS_NAMES = ['Daisy', 'Dandelion', 'Roses', 'Sunflowers', 'Tulips']
+
 
 # # Caminho para o dataset de validação
 # DATASET_PATH = "flower_photos"  # Altere se necessário
@@ -90,7 +92,8 @@ def classify():
 
     # Fazer previsão
     predictions = model.predict(img_array)
-    predicted_class = CLASS_NAMES[np.argmax(predictions)]
+    class_names = get_class_names()
+    predicted_class = class_names[np.argmax(predictions)]
     confidence = np.max(predictions)
 
     return jsonify({"class": predicted_class, "confidence": float(confidence)})
