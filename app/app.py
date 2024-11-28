@@ -4,6 +4,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
+from io import BytesIO
 import os
 
 
@@ -72,6 +73,7 @@ def ping():
     app.logger.debug("Ping endpoint foi chamado")
     return jsonify({"message": "pong"})
 
+
 @app.route('/classify', methods=['POST'])
 def classify():
     if 'file' not in request.files:
@@ -82,7 +84,7 @@ def classify():
         return jsonify({"error": "No file selected"}), 400
     
     # Processar a imagem
-    img = load_img(file, target_size=(150, 150))
+    img = load_img(BytesIO(file.read()), target_size=(150, 150))
     img_array = img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
